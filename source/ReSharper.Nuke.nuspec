@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>ReSharper.Nuke</id>
+    <version>$version$</version>
+    <authors>Sebastian Karasek, Matthias Koch</authors>
+    <owners>arodus</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://nuke.build/</projectUrl>
+    <licenseUrl>https://github.com/nuke-build/extensions/blob/master/LICENSE</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</iconUrl>
+    <description>Nuke extension for Resharper.</description>
+    <repository url="https://github.com/nuke-build/extensions" />
+    <dependencies>
+      <dependency id="Wave" version="[$wave$]" />
+    </dependencies>
+    <tags>nuke build</tags>
+  </metadata>
+  <files>
+    <file src="ReSharper.Nuke\bin\$configuration$\ReSharper.Nuke.dll" target="DotFiles" />
+  </files>
+</package>
