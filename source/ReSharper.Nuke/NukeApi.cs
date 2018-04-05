@@ -3,12 +3,15 @@
 // https://github.com/nuke-build/ide-extensions/blob/master/LICENSE
 
 using System;
+using System.IO;
 using System.Linq;
+using JetBrains.DataFlow;
 using JetBrains.IDE.RunConfig;
 using JetBrains.IDE.SolutionBuilders.Prototype.Services.Interaction;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 using JetBrains.VsIntegration.IDE.RunConfig;
+using JetBrains.VsIntegration.Interop;
 using ReSharper.Nuke.Utility;
 
 namespace ReSharper.Nuke
@@ -18,16 +21,23 @@ namespace ReSharper.Nuke
     {
         private readonly IRunConfigBuilder _runConfigBuilder;
         private readonly RunConfigProjectProvider _runConfigProjectProvider;
+        private readonly VsDtePropertiesFacade _vsDtePropertiesFacade;
         private readonly IExecutionProviderFactory _executionProviderFactory;
+        private readonly Lifetime _lifetime;
+        
 
         public NukeApi(
             IRunConfigBuilder runConfigBuilder,
             IExecutionProviderFactory executionProviderFactory,
-            RunConfigProjectProvider runConfigProjectProvider)
+            RunConfigProjectProvider runConfigProjectProvider,
+            VsDtePropertiesFacade vsDtePropertiesFacade,
+            Lifetime lifetime)
         {
             _runConfigBuilder = runConfigBuilder;
             _executionProviderFactory = executionProviderFactory;
             _runConfigProjectProvider = runConfigProjectProvider;
+            _vsDtePropertiesFacade = vsDtePropertiesFacade;
+            _lifetime = lifetime;
         }
 
         /// <summary>
@@ -43,17 +53,27 @@ namespace ReSharper.Nuke
             var runConfig = CreateNukeTargetRunConfig(buildProject);
             var runContext = CreateRunConfigContext(solution, debug);
 
-            CreateNukeArgumentsFile(solution, skipDependencies, targetName);
+            var argumentsFilePath = GetNukeArgumentsFilePath(buildProject);
+            CreateNukeArgumentsFile(argumentsFilePath.FullPath, skipDependencies, targetName);
+            var nukeFileWatcherLifetime = StartNukeTempFileWatcher(argumentsFilePath);
+           
+
+            var startupObjects = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects;
+            nukeFileWatcherLifetime.AddAction(() => _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects = startupObjects);
+
             _runConfigBuilder.ExecuteRunConfig(runConfig, runContext, isBuildRequired: true);
         }
 
-        private void CreateNukeArgumentsFile(ISolution solution, bool skipDependencies, string targetName)
+        private void CreateNukeArgumentsFile(string argumentsFilePath, bool skipDependencies, string targetName)
         {
-            var buildProject = solution.GetAllProjects().First(p => p.IsNukeProject());
-            var argumentsFilePath = buildProject.GetOutputAssemblyInfo(buildProject.GetCurrentTargetFrameworkId())?.Location?.Directory;
-            if (argumentsFilePath == null) return;
-            argumentsFilePath = argumentsFilePath / "nuke.tmp";
-            argumentsFilePath.WriteAllText($"{targetName}{(skipDependencies ? " -Skip" : string.Empty)}");
+            File.WriteAllText(argumentsFilePath,$"{targetName}{(skipDependencies ? " -Skip" : string.Empty)}");
+
+
+        }
+
+        private FileSystemPath GetNukeArgumentsFilePath(IProject buildProject)
+        {
+            return (buildProject.GetOutputDirectory(buildProject.GetCurrentTargetFrameworkId()) / "nuke.tmp");
         }
 
         private IRunConfig CreateNukeTargetRunConfig(IProject buildProject)
@@ -71,6 +91,31 @@ namespace ReSharper.Nuke
                            debug ? _executionProviderFactory.GetDebugExecutionProvider() : _executionProviderFactory.GetRunExecutionProvider(),
                        Solution = solution
                    };
+        }
+
+        private Lifetime StartNukeTempFileWatcher(FileSystemPath tempFilePath)
+        {
+            var lifetime = Lifetimes.Define(_lifetime, nameof(StartNukeTempFileWatcher));
+            var watcher = new FileSystemWatcher(tempFilePath.Directory.FullPath, "nuke.tmp");
+            watcher.EnableRaisingEvents = true;
+
+            void DeletedEventHandler(object sender, FileSystemEventArgs args)
+            {
+                lifetime.Terminate();
+            }
+
+            watcher.Deleted += DeletedEventHandler;
+
+            lifetime.Lifetime.AddAction(() =>
+            {
+                watcher.Deleted -= DeletedEventHandler;
+                watcher.EnableRaisingEvents = false;
+                watcher.Dispose();
+                watcher = null;
+            });
+
+            lifetime.Lifetime.AddDispose(watcher);
+            return lifetime.Lifetime;
         }
     }
 }
