@@ -9,6 +9,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
 using NUnit.Framework;
+[assembly: RequiresSTA]
 
 namespace ReSharper.Nuke.Tests
 {
