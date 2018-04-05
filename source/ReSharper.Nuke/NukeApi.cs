@@ -5,8 +5,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using EnvDTE;
 using JetBrains.DataFlow;
 using JetBrains.IDE.RunConfig;
+using JetBrains.IDE.SolutionBuilders;
 using JetBrains.IDE.SolutionBuilders.Prototype.Services.Interaction;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
@@ -24,7 +26,6 @@ namespace ReSharper.Nuke
         private readonly VsDtePropertiesFacade _vsDtePropertiesFacade;
         private readonly IExecutionProviderFactory _executionProviderFactory;
         private readonly Lifetime _lifetime;
-        
 
         public NukeApi(
             IRunConfigBuilder runConfigBuilder,
@@ -55,20 +56,22 @@ namespace ReSharper.Nuke
 
             var argumentsFilePath = GetNukeArgumentsFilePath(buildProject);
             CreateNukeArgumentsFile(argumentsFilePath.FullPath, skipDependencies, targetName);
+
             var nukeFileWatcherLifetime = StartNukeTempFileWatcher(argumentsFilePath);
-           
 
-            var startupObjects = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects;
-            nukeFileWatcherLifetime.AddAction(() => _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects = startupObjects);
+            RestoreStartupProjectAfterExecution(nukeFileWatcherLifetime);
 
-            _runConfigBuilder.ExecuteRunConfig(runConfig, runContext, isBuildRequired: true);
+            Lifetimes.Using(_lifetime,
+                lifetime =>
+                {
+                    lifetime.AddBracket(() => SetEnableBuild(true, buildProject, solution), () => SetEnableBuild(false, buildProject, solution));
+                    _runConfigBuilder.BuildRunConfigAndExecute(solution, runContext, runConfig);
+                });
         }
 
         private void CreateNukeArgumentsFile(string argumentsFilePath, bool skipDependencies, string targetName)
         {
-            File.WriteAllText(argumentsFilePath,$"{targetName}{(skipDependencies ? " -Skip" : string.Empty)}");
-
-
+            File.WriteAllText(argumentsFilePath, $"{targetName}{(skipDependencies ? " -Skip" : string.Empty)}");
         }
 
         private FileSystemPath GetNukeArgumentsFilePath(IProject buildProject)
@@ -96,14 +99,7 @@ namespace ReSharper.Nuke
         private Lifetime StartNukeTempFileWatcher(FileSystemPath tempFilePath)
         {
             var lifetime = Lifetimes.Define(_lifetime, nameof(StartNukeTempFileWatcher));
-            var watcher = new FileSystemWatcher(tempFilePath.Directory.FullPath, "nuke.tmp");
-            watcher.EnableRaisingEvents = true;
-
-            void DeletedEventHandler(object sender, FileSystemEventArgs args)
-            {
-                lifetime.Terminate();
-            }
-
+            var watcher = new FileSystemWatcher(tempFilePath.Directory.FullPath, tempFilePath.Name) { EnableRaisingEvents = true };
             watcher.Deleted += DeletedEventHandler;
 
             lifetime.Lifetime.AddAction(() =>
@@ -113,9 +109,31 @@ namespace ReSharper.Nuke
                 watcher.Dispose();
                 watcher = null;
             });
-
-            lifetime.Lifetime.AddDispose(watcher);
             return lifetime.Lifetime;
+
+            void DeletedEventHandler(object sender, FileSystemEventArgs args)
+            {
+                lifetime.Terminate();
+            }
+        }
+
+        private void SetEnableBuild(bool shouldBuild, IProject buildProject, ISolution solution)
+        {
+            var name = buildProject.ProjectFileLocation.FullPath.Substring(solution.SolutionFilePath.Directory.FullPath.Length + 1);
+
+            var activeConfiguration = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.ActiveConfiguration;
+            foreach (SolutionContext solutionContext in activeConfiguration.SolutionContexts)
+            {
+                if (solutionContext.ProjectName != name) continue;
+                solutionContext.ShouldBuild = shouldBuild;
+                break;
+            }
+        }
+
+        private void RestoreStartupProjectAfterExecution(Lifetime lifetime)
+        {
+            var startupObjects = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects;
+            lifetime.AddAction(() => _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects = startupObjects);
         }
     }
 }
