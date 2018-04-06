@@ -11,7 +11,13 @@
     <projectUrl>https://nuke.build/</projectUrl>
     <licenseUrl>https://github.com/nuke-build/extensions/blob/master/LICENSE</licenseUrl>
     <iconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</iconUrl>
-    <description>Nuke extension for Resharper.</description>
+    <description>
+      Adds support for the Nuke Cross-platform build automation system.
+
+
+      &#8226; Highlights Nuke build targets with an icon in the editor gutter.
+      &#8226; Context action to run and debug Nuke targets with and without dependencies.
+    </description>
     <releaseNotes>$releaseNotes$</releaseNotes>
     <repository url="https://github.com/nuke-build/extensions" />
     <dependencies>

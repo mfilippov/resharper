@@ -142,7 +142,11 @@ namespace ReSharper.Nuke
         private void TemporaryEnableNukeProjectBuild(Lifetime lifetime, IProject buildProject, ISolution solution)
         {
             lifetime.AddBracket(() => SetEnableBuild(true, buildProject, solution),
-                () => SetEnableBuild(false, buildProject, solution));
+                () =>
+                {
+                    SetEnableBuild(false, buildProject, solution);
+                    _vsDtePropertiesFacade.DTE.Solution.SaveAs(solution.SolutionFilePath.FullPath);
+                });
         }
     }
 }
