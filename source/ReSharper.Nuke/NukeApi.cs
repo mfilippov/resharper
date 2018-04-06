@@ -8,7 +8,6 @@ using System.Linq;
 using EnvDTE;
 using JetBrains.DataFlow;
 using JetBrains.IDE.RunConfig;
-using JetBrains.IDE.SolutionBuilders;
 using JetBrains.IDE.SolutionBuilders.Prototype.Services.Interaction;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
@@ -60,13 +59,9 @@ namespace ReSharper.Nuke
             var nukeFileWatcherLifetime = StartNukeTempFileWatcher(argumentsFilePath);
 
             RestoreStartupProjectAfterExecution(nukeFileWatcherLifetime);
-
-            Lifetimes.Using(_lifetime,
-                lifetime =>
-                {
-                    lifetime.AddBracket(() => SetEnableBuild(true, buildProject, solution), () => SetEnableBuild(false, buildProject, solution));
-                    _runConfigBuilder.BuildRunConfigAndExecute(solution, runContext, runConfig);
-                });
+            TemporaryEnableNukeProjectBuild(nukeFileWatcherLifetime,buildProject,solution);
+          
+            _runConfigBuilder.BuildRunConfigAndExecute(solution, runContext, runConfig);
         }
 
         private void CreateNukeArgumentsFile(string argumentsFilePath, bool skipDependencies, string targetName)
@@ -117,11 +112,12 @@ namespace ReSharper.Nuke
             }
         }
 
-        private void SetEnableBuild(bool shouldBuild, IProject buildProject, ISolution solution)
+        private void SetEnableBuild(bool shouldBuild, IProject project, ISolution solution)
         {
-            var name = buildProject.ProjectFileLocation.FullPath.Substring(solution.SolutionFilePath.Directory.FullPath.Length + 1);
+            var name = project.ProjectFileLocation.FullPath.Substring(solution.SolutionFilePath.Directory.FullPath.Length + 1);
 
             var activeConfiguration = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.ActiveConfiguration;
+
             foreach (SolutionContext solutionContext in activeConfiguration.SolutionContexts)
             {
                 if (solutionContext.ProjectName != name) continue;
@@ -133,7 +129,20 @@ namespace ReSharper.Nuke
         private void RestoreStartupProjectAfterExecution(Lifetime lifetime)
         {
             var startupObjects = _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects;
-            lifetime.AddAction(() => _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects = startupObjects);
+            lifetime.AddAction(() =>
+            {
+                if (startupObjects is object[] startupObjectsArray && startupObjectsArray.Length == 1)
+                {
+                    startupObjects = startupObjectsArray[0];
+                }
+                _vsDtePropertiesFacade.DTE.Solution.SolutionBuild.StartupProjects = startupObjects;
+            });
+        }
+
+        private void TemporaryEnableNukeProjectBuild(Lifetime lifetime, IProject buildProject, ISolution solution)
+        {
+            lifetime.AddBracket(() => SetEnableBuild(true, buildProject, solution),
+                () => SetEnableBuild(false, buildProject, solution));
         }
     }
 }

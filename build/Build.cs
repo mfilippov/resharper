@@ -3,6 +3,7 @@
 // https://github.com/nuke-build/ide-extensions/blob/master/LICENSE
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Nuke.Common.Git;
@@ -23,7 +24,7 @@ using static Nuke.Common.Tools.Git.GitTasks;
 class Build : NukeBuild
 {
     // Console application entry. Also defines the default target.
-    public static int Main() => Execute<Build>(x => x.Changelog);
+    public static int Main() => Execute<Build>(x => x.Pack);
 
     [Parameter] readonly string Source = "https://resharper-plugins.jetbrains.com/api/v2/package";
     [Parameter] readonly string ApiKey;
@@ -62,6 +63,8 @@ class Build : NukeBuild
 
     string ChangelogFile => RootDirectory / "CHANGELOG.md";
 
+    IEnumerable<string> ChangelogSectionNotes => ExtractChangelogSectionNotes(ChangelogFile);
+
     Target Changelog => _ => _
         .OnlyWhen(() => InvokedTargets.Contains(nameof(Changelog)))
         .Executes(() =>
@@ -77,12 +80,19 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
+            var releaseNotes = ChangelogSectionNotes
+                .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
+                .Concat(string.Empty)
+                .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
+                .JoinNewLine();
+
             GlobFiles(SourceDirectory, "*.nuspec")
                 .ForEach(x => NuGetPack(s => DefaultNuGetPack
                     .SetTargetPath(x)
                     .SetBasePath(Path.GetDirectoryName(x))
                     .SetProperty("wave", GetWaveVersion(ProjectFile) + ".0")
                     .SetProperty("currentyear", DateTime.Now.Year.ToString())
+                    .SetProperty("releaseNotes", releaseNotes)
                     .EnableNoPackageAnalysis()));
         });
 

@@ -2,6 +2,7 @@
 
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
+    <title>Nuke</title>
     <id>ReSharper.Nuke</id>
     <version>$version$</version>
     <authors>Sebastian Karasek, Matthias Koch</authors>
@@ -11,6 +12,7 @@
     <licenseUrl>https://github.com/nuke-build/extensions/blob/master/LICENSE</licenseUrl>
     <iconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</iconUrl>
     <description>Nuke extension for Resharper.</description>
+    <releaseNotes>$releaseNotes$</releaseNotes>
     <repository url="https://github.com/nuke-build/extensions" />
     <dependencies>
       <dependency id="Wave" version="[$wave$]" />
