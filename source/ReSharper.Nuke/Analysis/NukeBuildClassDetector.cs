@@ -20,10 +20,5 @@ namespace ReSharper.Nuke.Analysis
             if (@class == null) return;
             if (@class.IsNukeBuildClass()) AddGutterMark(element, element.GetDocumentRange(), "Nuke build definition", consumer);
         }
-
-        public NukeBuildClassDetector(NukeApi api)
-            : base(api)
-        {
-        }
     }
 }

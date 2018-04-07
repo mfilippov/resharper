@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
@@ -33,7 +34,7 @@ namespace ReSharper.Nuke.GutterMarks
         {
         }
 
-        public override IAnchor Anchor => BulbMenuAnchors.FirstClassContextItems;
+        [CanBeNull] public override IAnchor Anchor => BulbMenuAnchors.FirstClassContextItems;
 
         public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
         {
@@ -49,7 +50,7 @@ namespace ReSharper.Nuke.GutterMarks
             if (highlighting != null)
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return highlighting.GetBulbMenuItems(solution, textControl, (InvisibleAnchor) Anchor);
+                    return highlighting.GetBulbMenuItems(solution, textControl, (InvisibleAnchor) Anchor.NotNull());
             }
 
             return EmptyList<BulbMenuItem>.InstanceList;

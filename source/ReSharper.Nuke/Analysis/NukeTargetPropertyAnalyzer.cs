@@ -45,10 +45,5 @@ namespace ReSharper.Nuke.Analysis
             var highlighting = new NukeMarkOnGutter(declaration, documentRange, tooltip);
             consumer.AddHighlighting(highlighting, documentRange);
         }
-
-        public NukeTargetPropertyAnalyzer(NukeApi api)
-            : base(api)
-        {
-        }
     }
 }

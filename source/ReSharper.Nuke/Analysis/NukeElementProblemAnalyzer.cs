@@ -16,13 +16,6 @@ namespace ReSharper.Nuke.Analysis
     public abstract class NukeElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
         where T : ITreeNode
     {
-        protected readonly NukeApi Api;
-
-        protected NukeElementProblemAnalyzer(NukeApi api)
-        {
-            Api = api;
-        }
-
         protected override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             var processKind = data.GetDaemonProcessKind();

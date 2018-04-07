@@ -6,9 +6,14 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
+using JetBrains.IDE.RunConfig;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Psi;
 using JetBrains.TextControl;
+using JetBrains.Util;
+using JetBrains.VsIntegration.IDE.RunConfig;
+using JetBrains.VsIntegration.Interop;
 
 namespace ReSharper.Nuke.Actions
 {
@@ -45,16 +50,50 @@ namespace ReSharper.Nuke.Actions
             SkipDependencies = skipDependencies;
         }
 
+        [CanBeNull]
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
-            solution.GetComponent<NukeApi>().ExecuteTarget(TargetName, solution, Debug, SkipDependencies);
-            return null;
-        }
+            return textControl =>
+            {
+                var buildProject = textControl.Document.GetPsiSourceFile(solution)?.GetProject();
+                if(buildProject == null) return;
+
+                var runConfig = CreateRunConfig(solution, buildProject);
+                var runConfigBuilder = solution.GetComponent<IRunConfigBuilder>();
+                var dte = solution.GetComponent<VsDtePropertiesFacade>().DTE;
+
+                var nukeArgumentsFile = NukeApi.GetNukeArgumentsFilePath(buildProject);
+
+                NukeApi.CreateNukeArgumentsFile(nukeArgumentsFile.FullPath, SkipDependencies, TargetName);
+                var tempFileLifetime = NukeApi.StartNukeTempFileWatcher(nukeArgumentsFile,textControl.Lifetime);
+
+                NukeApi.RestoreStartupProjectAfterExecution(tempFileLifetime, dte);
+                NukeApi.TemporaryEnableNukeProjectBuild(tempFileLifetime, buildProject, solution, dte);
+
+                var executionProvider = solution.GetComponent<ExecutionProviders>().GetByIdOrDebug(runConfig.DefaultAction);
+                var context = new RunConfigContext
+                              {
+                                  Solution = solution,
+                                  ExecutionProvider = executionProvider
+                              };
+
+                runConfigBuilder.BuildRunConfigAndExecute(solution, context, runConfig);
+            };
+        
+    }
 
         /// <summary>
         /// The text of the bulb action.
         /// </summary>
         public override string Text =>
             $"{(Debug ? "Debug" : "Run")} {(SkipDependencies ? "Single " : string.Empty)}Target";
+
+        private IRunConfig CreateRunConfig(ISolution solution, IProject buildProject)
+        {
+            var runConfig = solution.GetComponent<RunConfigProjectProvider>().CreateNew();
+            runConfig.ProjectGuid = buildProject.Guid;
+            runConfig.DefaultAction = Debug ? "debug" : "run";
+            return runConfig;
+        }
     }
 }

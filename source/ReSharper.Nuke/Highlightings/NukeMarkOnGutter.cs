@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
@@ -28,17 +29,20 @@ namespace ReSharper.Nuke.Highlightings
         AttributeId = NukeHighlitingAttributeIds.NukeGutterIconAttribute)]
     public class NukeMarkOnGutter : IHighlighting, INukeHighlighting
     {
-        private readonly ITreeNode _myElement;
+        [CanBeNull] private readonly ITreeNode _myElement;
         private readonly DocumentRange _myRange;
 
-        public NukeMarkOnGutter(ITreeNode element, DocumentRange range, string tooltip)
+        public NukeMarkOnGutter([CanBeNull] ITreeNode element, DocumentRange range, string tooltip)
         {
             _myElement = element;
             _myRange = range;
             ToolTip = tooltip;
         }
 
-        public bool IsValid() => _myElement == null || _myElement.IsValid();
+        public bool IsValid()
+        {
+            return _myElement == null || _myElement.IsValid();
+        }
 
         public IEnumerable<BulbMenuItem> GetBulbMenuItems(ISolution solution, ITextControl textControl, IAnchor gutterMarkAnchor)
         {
@@ -48,10 +52,6 @@ namespace ReSharper.Nuke.Highlightings
             if (property == null) return EmptyList<BulbMenuItem>.Enumerable;
 
             var propertyName = propertyDeclaration.DeclaredName;
-            if (property.IsNukeBuildParameter())
-            {
-                return CreateParameterMenu(propertyName, gutterMarkAnchor, solution, textControl);
-            }
 
             if (property.IsNukeBuildTarget())
             {
@@ -84,16 +84,11 @@ namespace ReSharper.Nuke.Highlightings
                    };
         }
 
-        private BulbMenuItem[] CreateParameterMenu(string propertyName, IAnchor gutterMarkAnchor, ISolution solution, ITextControl textControl)
+        public DocumentRange CalculateRange()
         {
-            return new[]
-
-                   {
-                       CreateItem(new NukeParameterBulbAction(propertyName), solution, textControl, gutterMarkAnchor)
-                   };
+            return _myRange;
         }
 
-        public DocumentRange CalculateRange() => _myRange;
         public string ToolTip { get; }
         public string ErrorStripeToolTip => ToolTip;
     }
