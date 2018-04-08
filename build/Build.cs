@@ -9,6 +9,7 @@ using System.Linq;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.NuGet;
+using Nuke.Common.Tools.Nunit;
 using Nuke.Core;
 using Nuke.Core.Utilities;
 using Nuke.Core.Utilities.Collections;
@@ -19,6 +20,7 @@ using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.IO.PathConstruction;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using static Nuke.Common.Tools.Git.GitTasks;
+using static Nuke.Common.Tools.Nunit.NunitTasks;
 
 
 class Build : NukeBuild
@@ -59,6 +61,9 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
+            Nunit3(s => s
+                .AddInputFiles(GlobFiles(RootDirectory / "tests", $"**/bin/{Configuration}/*.Tests.dll"))
+                .AddResults(OutputDirectory / "test-result.xml"));
         });
 
     string ChangelogFile => RootDirectory / "CHANGELOG.md";

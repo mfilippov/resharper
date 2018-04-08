@@ -22,9 +22,11 @@ namespace ReSharper.Nuke.Tests.Analysis
             return highlighting is INukeHighlighting;
         }
 
-        [Test] public void TestNukeTargetPropertyAnalyzer()
+        [Test]
+        public void TestNukeTargetPropertyAnalyzer()
         {
             DoNamedTest2();
         }
     }
+  
 }

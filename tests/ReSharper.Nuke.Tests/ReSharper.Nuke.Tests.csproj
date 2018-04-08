@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2017.3.0" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2018.1.0-*" />
     <ProjectReference Include="..\..\source\ReSharper.Nuke\ReSharper.Nuke.csproj" />
   </ItemGroup>
 
