@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
+- Fixed: Solution was dirty after executing a target.
+
+## [0.1.11] / 2018-04-14
+- Fixed: Solution was dirty after executing a target.
 
 ## [0.1.7] / 2018-04-06
 - Fixed: Sometimes the wrong startup projects were set after executing a target.
@@ -16,7 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.0] / 2018-02-26
 - Initial version.
 
-[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.1.6...HEAD
-[0.1.6]: https://github.com/nuke-build/ide-extensions/compare/0.1.5...0.1.6
+[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.1.11...HEAD
+[0.1.11]: https://github.com/nuke-build/ide-extensions/compare/0.1.7...0.1.11
+[0.1.7]: https://github.com/nuke-build/ide-extensions/compare/0.1.5...0.1.7
 [0.1.5]: https://github.com/nuke-build/ide-extensions/compare/0.1.0...0.1.5
 [0.1.0]: https://github.com/nuke-build/ide-extensions/tree/0.1.0
