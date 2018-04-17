@@ -1,0 +1,31 @@
+<idea-plugin>
+  <id>com.intellij.rider.plugins.nuke</id>
+  <name>NUKE Support</name>
+  <version>1</version>
+  <vendor url="https://nuke.build">Matthias Koch, Sebastian Karasek</vendor>
+
+  <idea-version since-build="173.3389" until-build="173.3389.*" />
+
+  <depends>com.intellij.modules.rider</depends>
+
+  <project-components>
+    <component>
+      <implementation-class>com.jetbrains.rider.plugins.nuke.RunConfigurationManager</implementation-class>
+    </component>
+  </project-components>
+
+  <description>
+<![CDATA[
+<p>Adds support for NUKE. A cross-platform build automation system for C# developers.</p>
+
+<ul>
+  <li>Highlights build targets with an icon in the editor gutter.</li>
+  <li>Context action for target execution (run/debug and with/without dependencies).</li>
+</ul>
+]]>
+  </description>
+  <change-notes>
+<![CDATA[
+]]>
+  </change-notes>
+</idea-plugin>

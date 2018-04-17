@@ -1,0 +1,55 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jetbrains.intellij' version '0.2.18'
+}
+
+ext.repoRoot = new File("..").canonicalFile
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+buildDir = "build"
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+if (!ext.has("Source"))
+    ext.Source = null
+
+if (!ext.has("BuildCounter"))
+    ext.BuildCounter = 9999
+
+if (!ext.has("SinceBuild"))
+    ext.SinceBuild = null
+
+if (!ext.has("UntilBuild"))
+    ext.UntilBuild = null
+
+if (!ext.has("BuildConfiguration"))
+    ext.BuildConfiguration = "Debug"
+
+if (!ext.has("RiderOnly") || ext.RiderOnly ==~ "(?i)False")
+    ext.RiderOnly = false
+
+if (!ext.has("SkipNuGetRestore"))
+    ext.SkipNuGetRestore = false
+
+if (ext.has("pluginVersion"))
+    ext.version = ext.pluginVersion
+else
+    ext.version = "1.3.3.7"
+
+if (ext.has("username"))
+    intellij.publish.username = ext.username
+
+if (ext.has("password"))
+    intellij.publish.password = ext.password
+
+version ext.version
+
+logger.lifecycle("version=$ext.version")
+
+apply from: 'frontend.gradle'
+apply from: 'backend.gradle'
+apply from: 'shortcuts.gradle'

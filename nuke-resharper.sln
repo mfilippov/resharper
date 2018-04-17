@@ -14,17 +14,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{1FE13796-3
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		CHANGELOG.md = CHANGELOG.md
-		source\CopyToReSharperInstallationsDirectory.targets = source\CopyToReSharperInstallationsDirectory.targets
 		GitVersion.yml = GitVersion.yml
 		Jenkinsfile = Jenkinsfile
 		LICENSE = LICENSE
 		README.md = README.md
-		source\ReSharper.Nuke.nuspec = source\ReSharper.Nuke.nuspec
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.Nuke", "source\ReSharper.Nuke\ReSharper.Nuke.csproj", "{36BA4076-FA8B-4828-9D67-0FB09143CF79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.Nuke", "source\resharper\ReSharper.Nuke.csproj", "{36BA4076-FA8B-4828-9D67-0FB09143CF79}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.Nuke.Tests", "tests\ReSharper.Nuke.Tests\ReSharper.Nuke.Tests.csproj", "{073C38FD-0F6F-4CB5-84D1-266A5ED9C98B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rider.Nuke", "source\resharper\Rider.Nuke.csproj", "{FE5CDC3B-C87F-41EE-B318-83D3D3B8077F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +42,10 @@ Global
 		{073C38FD-0F6F-4CB5-84D1-266A5ED9C98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{073C38FD-0F6F-4CB5-84D1-266A5ED9C98B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{073C38FD-0F6F-4CB5-84D1-266A5ED9C98B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE5CDC3B-C87F-41EE-B318-83D3D3B8077F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE5CDC3B-C87F-41EE-B318-83D3D3B8077F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE5CDC3B-C87F-41EE-B318-83D3D3B8077F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE5CDC3B-C87F-41EE-B318-83D3D3B8077F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
