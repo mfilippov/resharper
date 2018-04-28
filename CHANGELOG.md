@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
-- Fixed: Solution was dirty after executing a target.
+- Added: Nuke tasks are now available in code completion.
+- Added: Quickfix for missing static imports of tasks.
 
 ## [0.1.11] / 2018-04-14
 - Fixed: Solution was dirty after executing a target.
