@@ -11,7 +11,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
 using JetBrains.TextControl;
-using JetBrains.Util;
 using JetBrains.VsIntegration.IDE.RunConfig;
 using JetBrains.VsIntegration.Interop;
 
@@ -56,7 +55,7 @@ namespace ReSharper.Nuke.Actions
             return textControl =>
             {
                 var buildProject = textControl.Document.GetPsiSourceFile(solution)?.GetProject();
-                if(buildProject == null) return;
+                if (buildProject == null) return;
 
                 var runConfig = CreateRunConfig(solution, buildProject);
                 var runConfigBuilder = solution.GetComponent<IRunConfigBuilder>();
@@ -65,7 +64,7 @@ namespace ReSharper.Nuke.Actions
                 var nukeArgumentsFile = NukeApi.GetNukeArgumentsFilePath(buildProject);
 
                 NukeApi.CreateNukeArgumentsFile(nukeArgumentsFile.FullPath, SkipDependencies, TargetName);
-                var tempFileLifetime = NukeApi.StartNukeTempFileWatcher(nukeArgumentsFile,textControl.Lifetime);
+                var tempFileLifetime = NukeApi.StartNukeTempFileWatcher(nukeArgumentsFile, textControl.Lifetime);
 
                 NukeApi.RestoreStartupProjectAfterExecution(tempFileLifetime, dte);
                 NukeApi.TemporaryEnableNukeProjectBuild(tempFileLifetime, buildProject, solution, dte);
@@ -79,8 +78,7 @@ namespace ReSharper.Nuke.Actions
 
                 runConfigBuilder.BuildRunConfigAndExecute(solution, context, runConfig);
             };
-        
-    }
+        }
 
         /// <summary>
         /// The text of the bulb action.

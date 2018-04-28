@@ -46,8 +46,7 @@ namespace ReSharper.Nuke.GutterMarks
             var textControl = textControlManager.FocusedTextControl.Value;
 
             var daemon = solution.GetComponent<IDaemon>();
-            var highlighting = daemon.GetHighlighting(highlighter) as NukeMarkOnGutter;
-            if (highlighting != null)
+            if (daemon.GetHighlighting(highlighter) is NukeMarkOnGutter highlighting)
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
                     return highlighting.GetBulbMenuItems(solution, textControl, (InvisibleAnchor) Anchor.NotNull());
