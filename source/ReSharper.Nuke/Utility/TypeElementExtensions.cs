@@ -20,7 +20,7 @@ namespace ReSharper.Nuke.Utility
         /// <returns>True if the type element is a Nuke build class definition.</returns>
         public static bool IsNukeBuildClass(this ITypeElement typeElement)
         {
-            var nukeBuildTypeElement = TypeFactory.CreateTypeByCLRName("Nuke.Core.NukeBuild", typeElement.Module).GetTypeElement();
+            var nukeBuildTypeElement = TypeFactory.CreateTypeByCLRName("Nuke.Common.NukeBuild", typeElement.Module).GetTypeElement();
             return typeElement.IsDescendantOf(nukeBuildTypeElement);
         }
     }

@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{1FE13796-3
 		CHANGELOG.md = CHANGELOG.md
 		source\CopyToReSharperInstallationsDirectory.targets = source\CopyToReSharperInstallationsDirectory.targets
 		GitVersion.yml = GitVersion.yml
+		Jenkinsfile = Jenkinsfile
 		LICENSE = LICENSE
 		nuke-extensions.sln.DotSettings = nuke-extensions.sln.DotSettings
 		README.md = README.md

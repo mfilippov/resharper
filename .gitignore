@@ -265,3 +265,5 @@ __pycache__/
 
 !Nuke.ReSharper/
 output/
+
+*.Generated.Xaml

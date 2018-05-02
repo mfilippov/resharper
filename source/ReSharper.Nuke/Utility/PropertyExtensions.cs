@@ -20,7 +20,7 @@ namespace ReSharper.Nuke.Utility
         /// <returns>True if the property is a Nuke build target definition.</returns>
         public static bool IsNukeBuildTarget(this IProperty property)
         {
-            var nukeBuildTargetType = TypeFactory.CreateTypeByCLRName("Nuke.Core.Target", property.Module);
+            var nukeBuildTargetType = TypeFactory.CreateTypeByCLRName("Nuke.Common.Target", property.Module);
             return property.Type.Equals(nukeBuildTargetType);
         }
 
@@ -31,7 +31,7 @@ namespace ReSharper.Nuke.Utility
         /// <returns>True if the property is a Nuke build parameter definition.</returns>
         public static bool IsNukeBuildParameter(this IProperty property)
         {
-            var nukeParameterAttribute = TypeFactory.CreateTypeByCLRName("Nuke.Core.ParameterAttribute", property.Module);
+            var nukeParameterAttribute = TypeFactory.CreateTypeByCLRName("Nuke.Common.ParameterAttribute", property.Module);
             return property.HasAttributeInstance(nukeParameterAttribute.GetClrName(), inherit: true);
         }
     }
