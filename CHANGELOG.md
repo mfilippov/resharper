@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
+
+## [0.2.0] / 2018-05-02
 - Added: Nuke tasks are now available in code completion.
 - Added: Quickfix for missing static imports of tasks.
 
@@ -21,7 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.0] / 2018-02-26
 - Initial version.
 
-[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.1.11...HEAD
+[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/nuke-build/ide-extensions/compare/0.1.11...0.2.0
 [0.1.11]: https://github.com/nuke-build/ide-extensions/compare/0.1.7...0.1.11
 [0.1.7]: https://github.com/nuke-build/ide-extensions/compare/0.1.5...0.1.7
 [0.1.5]: https://github.com/nuke-build/ide-extensions/compare/0.1.0...0.1.5
