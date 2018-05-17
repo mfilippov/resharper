@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
+- Fixed: Private and instance methods were suggested by code completion.
 
 ## [0.2.0] / 2018-05-02
 - Added: Nuke tasks are now available in code completion.

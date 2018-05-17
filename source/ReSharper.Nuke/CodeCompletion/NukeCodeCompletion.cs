@@ -51,12 +51,7 @@ namespace ReSharper.Nuke.CodeCompletion
 
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
-            if (!context.BasicContext.SourceFile.GetProject().IsNukeProject()) return false;
-            if (context.IsQualified) return false;
-            return context.PsiModule.GetPsiServices().Symbols
-                .GetTypesAndNamespacesInFile(context.BasicContext.SourceFile)
-                .OfType<IClass>()
-                .Any(x => x.IsNukeBuildClass());
+            return context.BasicContext.SourceFile.GetProject().IsNukeProject();
         }
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
@@ -130,7 +125,7 @@ namespace ReSharper.Nuke.CodeCompletion
         private IEnumerable<KeyValuePair<string, IList<DeclaredElementInstance<IMethod>>>> GetTaskMethods(ISymbolScope symbolScope)
         {
             var map = new OneToListMap<string, DeclaredElementInstance<IMethod>>();
-
+           
             foreach (var shortName in symbolScope.GetAllShortNames())
             {
                 if (!shortName.EndsWith("Tasks")) continue;
@@ -141,7 +136,8 @@ namespace ReSharper.Nuke.CodeCompletion
                     if (!(symbol is IClass @class)) continue;
                     if (!@class.GetContainingNamespace().QualifiedName.StartsWith("Nuke")) continue;
 
-                    foreach (var classMethod in @class.Methods) map.Add(classMethod.ShortName, new DeclaredElementInstance<IMethod>(classMethod));
+                    foreach (var classMethod in @class.Methods
+                        .Where(x => x.AccessibilityDomain.DomainType == AccessibilityDomain.AccessibilityDomainType.PUBLIC && x.IsStatic)) map.Add(classMethod.ShortName, new DeclaredElementInstance<IMethod>(classMethod));
                 }
             }
 
