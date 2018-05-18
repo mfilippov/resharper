@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
+
+## [0.2.2] / 2018-05-18
 - Fixed: Private and instance methods were suggested by code completion.
 
 ## [0.2.0] / 2018-05-02
@@ -24,7 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.0] / 2018-02-26
 - Initial version.
 
-[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.2.0...HEAD
+[vNext]: https://github.com/nuke-build/ide-extensions/compare/0.2.2...HEAD
+[0.2.2]: https://github.com/nuke-build/ide-extensions/compare/0.2.0...0.2.2
 [0.2.0]: https://github.com/nuke-build/ide-extensions/compare/0.1.11...0.2.0
 [0.1.11]: https://github.com/nuke-build/ide-extensions/compare/0.1.7...0.1.11
 [0.1.7]: https://github.com/nuke-build/ide-extensions/compare/0.1.5...0.1.7
