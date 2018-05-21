@@ -1,6 +1,6 @@
 ﻿// Copyright Matthias Koch, Sebastian Karasek 2018.
 // Distributed under the MIT License.
-// https://github.com/nuke-build/ide-extensions/blob/master/LICENSE
+// https://github.com/nuke-build/resharper/blob/master/LICENSE
 
 using System;
 using System.Collections.Generic;
