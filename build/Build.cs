@@ -64,6 +64,8 @@ class Build : NukeBuild
         {
             MSBuild(s => DefaultMSBuildCompile
                 .SetMaxCpuCount(maxCpuCount: 1));
+            
+            GradleTask("buildPlugin");
         });
 
     Target Test => _ => _
@@ -109,7 +111,6 @@ class Build : NukeBuild
                     .SetProperty("releaseNotes", releaseNotes)
                     .EnableNoPackageAnalysis()));
 
-            GradleTask("buildPlugin");
             GlobFiles(RiderDirectory / "build" / "distributions", "*.zip")
                 .ForEach(x => File.Copy(x, OutputDirectory / Path.GetFileName(x)));
         });
