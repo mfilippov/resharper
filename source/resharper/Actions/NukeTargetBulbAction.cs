@@ -6,21 +6,19 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
-using JetBrains.IDE.RunConfig;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.UnitTestProvider.JavaScript;
 using JetBrains.TextControl;
-using JetBrains.Util;
 #if RESHARPER
+using JetBrains.ProjectModel.Features.RunConfig;
 using JetBrains.VsIntegration.IDE.RunConfig;
 using JetBrains.VsIntegration.Interop;
 #endif
 #if RIDER
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;
+using JetBrains.Util;
 #endif
 
 namespace ReSharper.Nuke.Actions

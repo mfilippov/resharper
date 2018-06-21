@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2018.1.0-*" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2018.2.0-*" />
     <ProjectReference Include="..\..\source\resharper\ReSharper.Nuke.csproj" />
   </ItemGroup>
 

@@ -8,14 +8,14 @@
   <Import Project="..\..\shared\Configuration.props" />
   
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);RESHARPER</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="EnvDTE80" Version="8.0.2" />
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2018.1.0-*" />
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2018.2.0-*" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>

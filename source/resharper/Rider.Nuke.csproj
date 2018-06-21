@@ -8,13 +8,13 @@
   <Import Project="..\..\shared\Configuration.props" />
   
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);RIDER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Rider.SDK" Version="2018.1.0" />
+    <PackageReference Include="JetBrains.Rider.SDK" Version="2018.2.0-*" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>

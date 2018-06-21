@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
@@ -16,16 +15,17 @@ using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Tools.Nunit;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
-using Nuke.Core.Tooling;
+using Nuke.Common.Tooling;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
-using static Nuke.Core.Tooling.NuGetPackageResolver;
+using static Nuke.Common.Tooling.NuGetPackageResolver;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
+using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.Tools.Git.GitTasks;
 using static Nuke.Common.Tools.Nunit.NunitTasks;
-using static Nuke.Core.Tooling.ProcessTasks;
+using static Nuke.Common.Tooling.ProcessTasks;
 
 class Build : NukeBuild
 {
@@ -58,12 +58,21 @@ class Build : NukeBuild
             MSBuild(s => DefaultMSBuildRestore);
         });
 
+    Target Model => _ => _
+        .Executes(() =>
+        {
+            GradleTask("generateModel");
+        });
+
     Target Compile => _ => _
-        .DependsOn(Restore)
+        .DependsOn(Restore, Model)
         .Executes(() =>
         {
             MSBuild(s => DefaultMSBuildCompile
-                .SetMaxCpuCount(maxCpuCount: 1));
+                .SetMaxCpuCount(maxCpuCount: 1)
+                .ResetAssemblyVersion()
+                .ResetFileVersion() 
+                .ResetInformationalVersion());
             
             GradleTask("buildPlugin");
         });
@@ -93,7 +102,7 @@ class Build : NukeBuild
         });
 
     Target Pack => _ => _
-        .DependsOn(Compile)
+        .DependsOn(Compile, Model)
         .Executes(() =>
         {
             var releaseNotes = ChangelogSectionNotes
@@ -141,12 +150,12 @@ class Build : NukeBuild
 
     void GradleTask(string task)
     {
-        var arguments = $":{task}";
+        var arguments = $":{task} --no-daemon";
         arguments += $" -PpluginVersion={GitVersion.NuGetVersionV2} -PBuildConfiguration={Configuration}";
         if (Username != null || Password != null)
             arguments += $" -Pusername={Username} -Ppassword={Password}";
         StartProcess(
-                SourceDirectory / "rider" / "gradlew.bat",
+                SourceDirectory / "rider" / (IsWin ? "gradlew.bat" : "gradlew"),
                 arguments,
                 workingDirectory: RiderDirectory)
             .AssertZeroExitCode();

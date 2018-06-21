@@ -1,39 +1,33 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+buildscript {
+    repositories {
+        maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+        mavenCentral()
+    }
+
+    dependencies { classpath "com.jetbrains.rd:rd-gen:0.1.18" }
+}
+
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
-    id 'org.jetbrains.intellij' version '0.2.18'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.50'
+    id 'org.jetbrains.intellij' version '0.3.2'
 }
+
+apply plugin: 'com.jetbrains.rdgen'
 
 ext.repoRoot = new File("..").canonicalFile
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-buildDir = "build"
+ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
+ext.rdLibDirectory = new File(repoRoot, "rider/build/riderRD-2018.2-SNAPSHOT/lib/rd")
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-if (!ext.has("Source"))
-    ext.Source = null
-
-if (!ext.has("BuildCounter"))
-    ext.BuildCounter = 9999
-
-if (!ext.has("SinceBuild"))
-    ext.SinceBuild = null
-
-if (!ext.has("UntilBuild"))
-    ext.UntilBuild = null
-
 if (!ext.has("BuildConfiguration"))
     ext.BuildConfiguration = "Debug"
-
-if (!ext.has("RiderOnly") || ext.RiderOnly ==~ "(?i)False")
-    ext.RiderOnly = false
-
-if (!ext.has("SkipNuGetRestore"))
-    ext.SkipNuGetRestore = false
 
 if (ext.has("pluginVersion"))
     ext.version = ext.pluginVersion
@@ -48,8 +42,63 @@ if (ext.has("password"))
 
 version ext.version
 
-logger.lifecycle("version=$ext.version")
+task generateModel(type: RdGen) {
 
-apply from: 'frontend.gradle'
-apply from: 'backend.gradle'
-apply from: 'shortcuts.gradle'
+    def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+    def csOutput = new File(repoRoot, "resharper/RdNukeProtocol")
+    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/nuke/RdNukeProtocol")
+
+    params {
+        verbose = true
+        classpath "$rdLibDirectory/rider-model.jar"
+        sources "$modelDir/rider"
+        hashFolder = 'build/rdgen/rider'
+        packages = "model.rider"
+
+        generator {
+            language = "kotlin"
+            transform = "asis"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "com.jetbrains.rider.model"
+            directory = "$ktOutput"
+        }
+
+        generator {
+            language = "csharp"
+            transform = "reversed"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+            namespace = "JetBrains.Rider.Model"
+            directory = "$csOutput"
+        }
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions { jvmTarget = "1.8" }
+}
+
+intellij {
+    type = 'RD'
+    // Download a version of Rider to compile and run with. Either set `version` to
+    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
+    // This will download from www.jetbrains.com/intellij-repository/snapshots or
+    // www.jetbrains.com/intellij-repository/releases, respectively.
+    version = "2018.2-SNAPSHOT"
+    // Sources aren't available for Rider
+    downloadSources = false
+}
+
+prepareSandbox {
+    def dllFiles = [
+        "../resharper/bin/Rider.Nuke/$BuildConfiguration/Rider.Nuke.dll",
+        "../resharper/bin/Rider.Nuke/$BuildConfiguration/Rider.Nuke.pdb"
+    ]
+
+    dllFiles.forEach({ f ->
+        def file = file(f)
+        from(file, { into "$intellij.pluginName/dotnet" })
+    })
+}
