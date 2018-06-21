@@ -18,16 +18,11 @@
     <PackageReference Include="JetBrains.ReSharper.SDK" Version="2018.1.0-*" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   
-  <ItemGroup>
-    <Compile Update="**\*.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Remove="RdNukeProtocol\**" />
+  <ItemGroup Condition="'$(OS)' != 'Unix'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     
     <ThemedIconsXamlV3 Include="**\nuke-white.xaml">
       <ThemeColumns>GrayDark</ThemeColumns>
@@ -35,13 +30,20 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ThemedIconsXamlV3>
-    
     <ThemedIconsXamlV3 Include="**\nuke-black.xaml">
       <ThemeColumns>Color</ThemeColumns>
       <RemoveBackgroundElement>True</RemoveBackgroundElement>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ThemedIconsXamlV3>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Remove="RdNukeProtocol\**" />
   </ItemGroup>
   
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

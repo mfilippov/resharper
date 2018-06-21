@@ -12,30 +12,32 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);RIDER</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK" Version="2018.1.0" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup Condition="'$(OS)' != 'Unix'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+
     <ThemedIconsXamlV3 Include="**\nuke-white.xaml">
       <ThemeColumns>GrayDark</ThemeColumns>
       <RemoveBackgroundElement>True</RemoveBackgroundElement>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ThemedIconsXamlV3>
-
     <ThemedIconsXamlV3 Include="**\nuke-black.xaml">
       <ThemeColumns>Color</ThemeColumns>
       <RemoveBackgroundElement>True</RemoveBackgroundElement>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ThemedIconsXamlV3>
-    
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ReSharper.Nuke.nuspec;CopyToReSharperInstallationsDirectory.targets" />
     <Compile Remove="NukeApi.cs" />
   </ItemGroup>
