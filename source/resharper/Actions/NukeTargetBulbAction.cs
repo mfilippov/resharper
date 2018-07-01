@@ -95,8 +95,9 @@ namespace ReSharper.Nuke.Actions
         /// <summary>
         /// The text of the bulb action.
         /// </summary>
-        public override string Text =>
-            $"{(Debug ? "Debug" : "Run")} {(SkipDependencies ? "single " : string.Empty)}target";
+        public override string Text => !SkipDependencies
+            ? Debug ? "Debug" : "Run" + " target"
+            : "Without dependencies";
 
 #if RESHARPER
         private IRunConfig CreateRunConfig(ISolution solution, IProject buildProject)
