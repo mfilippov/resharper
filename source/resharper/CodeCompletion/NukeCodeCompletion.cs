@@ -113,10 +113,7 @@ namespace ReSharper.Nuke.CodeCompletion
                 CSharpLookupItemFactory.Instance.SetFunctionParameters(context,
                     functions,
                     lookupItem,
-                    methodsInfo,
-                    qualifiableReference,
-                    qualifierStaticness,
-                    includeFollowingExpression);
+                    methodsInfo);
             }
 
             methodsInfo.Placement.OrderString = name;

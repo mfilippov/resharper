@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace ReSharper.Nuke.Tests
 {
     [ZoneDefinition]
-    public interface INukeTestZone : ITestsZone, IRequire<PsiFeatureTestZone>
+    public interface INukeTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
     {
     }
 
